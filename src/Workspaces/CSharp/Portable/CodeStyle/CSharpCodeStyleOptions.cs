@@ -226,6 +226,9 @@ namespace Microsoft.CodeAnalysis.CSharp.CodeStyle
             yield return PreferBraces;
             yield return PreferSimpleDefaultExpression;
             yield return PreferLocalOverAnonymousFunction;
+            yield return PreferThrowExpression;
+            yield return PreferInlinedVariableDeclaration;
+            yield return PreferDeconstructedVariableDeclaration;
         }
 
         public static IEnumerable<Option<CodeStyleOption<ExpressionBodyPreference>>> GetExpressionBodyOptions()
