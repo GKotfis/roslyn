@@ -8,6 +8,7 @@ using Microsoft.CodeAnalysis.CodeStyle;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.LanguageServices;
 using Microsoft.CodeAnalysis.Operations;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.Shared.Extensions;
 using Microsoft.CodeAnalysis.Text;
 
@@ -48,6 +49,8 @@ namespace Microsoft.CodeAnalysis.UseThrowExpression
         public override bool OpenFileOnly(Workspace workspace) => false;
 
         protected abstract bool IsSupported(ParseOptions options);
+
+        protected abstract Option<CodeStyleOption<bool>> PreferThrowExpressionOption();
 
         protected override void InitializeWorker(AnalysisContext context)
         {
@@ -96,8 +99,7 @@ namespace Microsoft.CodeAnalysis.UseThrowExpression
             {
                 return;
             }
-
-            var option = optionSet.GetOption(CodeStyleOptions.PreferThrowExpression, throwStatementSyntax.Language);
+            var option = optionSet.GetOption(PreferThrowExpressionOption());
             if (!option.Value)
             {
                 return;

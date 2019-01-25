@@ -3,11 +3,13 @@
 using System.Composition;
 using System.Threading;
 using Microsoft.CodeAnalysis.CodeRefactorings;
-using Microsoft.CodeAnalysis.CSharp.Extensions;
+using Microsoft.CodeAnalysis.CodeStyle;
+using Microsoft.CodeAnalysis.CSharp.CodeStyle;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Editing;
 using Microsoft.CodeAnalysis.InitializeParameter;
 using Microsoft.CodeAnalysis.Operations;
+using Microsoft.CodeAnalysis.Options;
 
 namespace Microsoft.CodeAnalysis.CSharp.InitializeParameter
 {
@@ -47,5 +49,8 @@ namespace Microsoft.CodeAnalysis.CSharp.InitializeParameter
 
             return true;
         }
+
+        protected override Option<CodeStyleOption<bool>> PreferThrowExpressionOption() 
+            => CSharpCodeStyleOptions.PreferThrowExpression;
     }
 }

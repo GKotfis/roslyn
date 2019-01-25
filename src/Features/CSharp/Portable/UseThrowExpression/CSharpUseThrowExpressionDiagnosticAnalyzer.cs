@@ -2,9 +2,12 @@
 
 using System;
 using System.Threading;
+using Microsoft.CodeAnalysis.CodeStyle;
+using Microsoft.CodeAnalysis.CSharp.CodeStyle;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.LanguageServices;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.CodeAnalysis.UseThrowExpression;
 
 namespace Microsoft.CodeAnalysis.CSharp.UseThrowExpression
@@ -23,5 +26,8 @@ namespace Microsoft.CodeAnalysis.CSharp.UseThrowExpression
 
         protected override ISemanticFactsService GetSemanticFactsService()
             => CSharpSemanticFactsService.Instance;
+
+        protected override Option<CodeStyleOption<bool>> PreferThrowExpressionOption()
+            => CSharpCodeStyleOptions.PreferThrowExpression;
     }
 }
