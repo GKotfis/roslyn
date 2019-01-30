@@ -3,9 +3,11 @@
 Imports System.Composition
 Imports System.Threading
 Imports Microsoft.CodeAnalysis.CodeRefactorings
+Imports Microsoft.CodeAnalysis.CodeStyle
 Imports Microsoft.CodeAnalysis.Editing
 Imports Microsoft.CodeAnalysis.InitializeParameter
 Imports Microsoft.CodeAnalysis.Operations
+Imports Microsoft.CodeAnalysis.Options
 Imports Microsoft.CodeAnalysis.VisualBasic.Syntax
 
 Namespace Microsoft.CodeAnalysis.VisualBasic.InitializeParameter
@@ -40,6 +42,11 @@ Namespace Microsoft.CodeAnalysis.VisualBasic.InitializeParameter
 
         Protected Overrides Function CanOffer(body As SyntaxNode) As Boolean
             Return True
+        End Function
+
+        ' This option is not supported yet. False by default
+        Protected Overrides Function PreferThrowExpressionOption() As [Option](Of CodeStyleOption(Of Boolean))
+            Return New [Option](Of CodeStyleOption(Of Boolean))(NameOf(PreferThrowExpressionOption), "", New CodeStyleOption(Of Boolean)(False, NotificationOption.Silent))
         End Function
     End Class
 End Namespace
