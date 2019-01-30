@@ -47,7 +47,7 @@ namespace Microsoft.CodeAnalysis.CSharp.UseDeconstruction
                 return;
             }
 
-            var option = optionSet.GetOption(CodeStyleOptions.PreferDeconstructedVariableDeclaration, context.Node.Language);
+            var option = optionSet.GetOption(CSharpCodeStyleOptions.PreferDeconstructedVariableDeclaration);
             if (!option.Value)
             {
                 return;

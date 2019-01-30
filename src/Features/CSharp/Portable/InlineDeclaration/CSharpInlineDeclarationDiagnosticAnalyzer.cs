@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using Microsoft.CodeAnalysis.CodeStyle;
+using Microsoft.CodeAnalysis.CSharp.CodeStyle;
 using Microsoft.CodeAnalysis.CSharp.Extensions;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -72,7 +73,7 @@ namespace Microsoft.CodeAnalysis.CSharp.InlineDeclaration
                 return;
             }
             
-            var option = optionSet.GetOption(CodeStyleOptions.PreferInlinedVariableDeclaration, argumentNode.Language);
+            var option = optionSet.GetOption(CSharpCodeStyleOptions.PreferInlinedVariableDeclaration);
             if (!option.Value)
             {
                 // Don't bother doing any work if the user doesn't even have this preference set.
