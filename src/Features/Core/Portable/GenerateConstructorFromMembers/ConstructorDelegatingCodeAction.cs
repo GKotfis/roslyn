@@ -24,17 +24,20 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
             private readonly Document _document;
             private readonly State _state;
             private readonly bool _addNullChecks;
+            private readonly bool _preferThrowExpression;
 
             public ConstructorDelegatingCodeAction(
                 GenerateConstructorFromMembersCodeRefactoringProvider service,
                 Document document,
                 State state,
-                bool addNullChecks)
+                bool addNullChecks,
+                bool preferThrowExpression)
             {
                 _service = service;
                 _document = document;
                 _state = state;
                 _addNullChecks = addNullChecks;
+                _preferThrowExpression = preferThrowExpression;
             }
 
             protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
@@ -58,9 +61,6 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
                 var nullCheckStatements = ArrayBuilder<SyntaxNode>.GetInstance();
                 var assignStatements = ArrayBuilder<SyntaxNode>.GetInstance();
 
-                var options = await _document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
-                var useThrowExpressions = options.GetOption(CodeStyleOptions.PreferThrowExpression).Value;
-
                 for (var i = _state.DelegatedConstructor.Parameters.Length; i < _state.Parameters.Length; i++)
                 {
                     var symbolName = _state.SelectedMembers[i].Name;
@@ -72,7 +72,7 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
 
                     factory.AddAssignmentStatements(
                         compilation, parameter, fieldAccess,
-                        _addNullChecks, useThrowExpressions,
+                        _addNullChecks, _preferThrowExpression,
                         nullCheckStatements, assignStatements);
                 }
 

@@ -73,6 +73,10 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
                 }
 
                 var addNullChecks = (addNullChecksOption?.Value).GetValueOrDefault();
+
+                // TODO Get Language Option
+                bool preferThrowExpression = false;
+
                 var state = State.TryGenerate(
                     _service, _document, _textSpan, _containingType, 
                     result.Members, cancellationToken);
@@ -84,7 +88,7 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
                 {
                     if (state.MatchingConstructor.IsImplicitlyDeclared)
                     {
-                        var codeAction = new FieldDelegatingCodeAction(_service, _document, state, addNullChecks);
+                        var codeAction = new FieldDelegatingCodeAction(_service, _document, state, addNullChecks, preferThrowExpression);
                         return await codeAction.GetOperationsAsync(cancellationToken).ConfigureAwait(false);
                     }
 
@@ -98,8 +102,8 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
                 else
                 {
                     var codeAction = state.DelegatedConstructor != null
-                        ? new ConstructorDelegatingCodeAction(_service, _document, state, addNullChecks)
-                        : (CodeAction)new FieldDelegatingCodeAction(_service, _document, state, addNullChecks);
+                        ? new ConstructorDelegatingCodeAction(_service, _document, state, addNullChecks, preferThrowExpression)
+                        : (CodeAction)new FieldDelegatingCodeAction(_service, _document, state, addNullChecks, preferThrowExpression);
 
                     return await codeAction.GetOperationsAsync(cancellationToken).ConfigureAwait(false);
                 }

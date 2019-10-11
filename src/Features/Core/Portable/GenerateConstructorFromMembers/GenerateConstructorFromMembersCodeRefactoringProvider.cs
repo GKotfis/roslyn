@@ -62,8 +62,17 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
                 return;
             }
 
+            bool preferThrowExpression = false;
+            
+            if (document.Project.Language == LanguageNames.CSharp)
+            {
+                var options = await document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
+                //options.GetOption()
+
+            }
+
             var actions = await this.GenerateConstructorFromMembersAsync(
-                document, textSpan, addNullChecks: false, cancellationToken: cancellationToken).ConfigureAwait(false);
+                document, textSpan, addNullChecks: false, preferThrowExpression, cancellationToken: cancellationToken).ConfigureAwait(false);
             context.RegisterRefactorings(actions);
 
             if (actions.IsDefaultOrEmpty && textSpan.IsEmpty)
@@ -136,7 +145,7 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
         }
 
         public async Task<ImmutableArray<CodeAction>> GenerateConstructorFromMembersAsync(
-            Document document, TextSpan textSpan, bool addNullChecks, CancellationToken cancellationToken)
+            Document document, TextSpan textSpan, bool addNullChecks, bool preferThrowExpression, CancellationToken cancellationToken)
         {
             using (Logger.LogBlock(FunctionId.Refactoring_GenerateFromMembers_GenerateConstructorFromMembers, cancellationToken))
             {
@@ -146,7 +155,7 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
                     var state = State.TryGenerate(this, document, textSpan, info.ContainingType, info.SelectedMembers, cancellationToken);
                     if (state != null && state.MatchingConstructor == null)
                     {
-                        return GetCodeActions(document, state, addNullChecks);
+                        return GetCodeActions(document, state, addNullChecks, preferThrowExpression);
                     }
                 }
 
@@ -154,14 +163,14 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
             }
         }
 
-        private ImmutableArray<CodeAction> GetCodeActions(Document document, State state, bool addNullChecks)
+        private ImmutableArray<CodeAction> GetCodeActions(Document document, State state, bool addNullChecks, bool preferThrowExpression)
         {
             var result = ArrayBuilder<CodeAction>.GetInstance();
 
-            result.Add(new FieldDelegatingCodeAction(this, document, state, addNullChecks));
+            result.Add(new FieldDelegatingCodeAction(this, document, state, addNullChecks, preferThrowExpression));
             if (state.DelegatedConstructor != null)
             {
-                result.Add(new ConstructorDelegatingCodeAction(this, document, state, addNullChecks));
+                result.Add(new ConstructorDelegatingCodeAction(this, document, state, addNullChecks, preferThrowExpression));
             }
 
             return result.ToImmutableAndFree();

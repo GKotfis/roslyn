@@ -23,17 +23,20 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
             private readonly Document _document;
             private readonly State _state;
             private readonly bool _addNullChecks;
+            private readonly bool _preferThrowExpression;
 
             public FieldDelegatingCodeAction(
                 GenerateConstructorFromMembersCodeRefactoringProvider service,
                 Document document,
                 State state,
-                bool addNullChecks)
+                bool addNullChecks,
+                bool preferThrowExpression)
             {
                 _service = service;
                 _document = document;
                 _state = state;
                 _addNullChecks = addNullChecks;
+                _preferThrowExpression = preferThrowExpression;
             }
 
             protected override async Task<Document> GetChangedDocumentAsync(CancellationToken cancellationToken)
@@ -53,9 +56,6 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
                 var factory = _document.GetLanguageService<SyntaxGenerator>();
 
                 var syntaxTree = await _document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
-                var options = await _document.GetOptionsAsync(cancellationToken).ConfigureAwait(false);
-                var preferThrowExpression = options.GetOption(CodeStyleOptions.PreferThrowExpression).Value;
-
                 var compilation = await _document.Project.GetCompilationAsync(cancellationToken).ConfigureAwait(false);
                 var (fields, constructor) = factory.CreateFieldDelegatingConstructor(
                     compilation,
@@ -65,7 +65,7 @@ namespace Microsoft.CodeAnalysis.GenerateConstructorFromMembers
                     parameterToExistingFieldMap,
                     parameterToNewFieldMap: null,
                     addNullChecks: _addNullChecks,
-                    preferThrowExpression: preferThrowExpression,
+                    preferThrowExpression: _preferThrowExpression,
                     cancellationToken: cancellationToken);
 
                 // If the user has selected a set of members (i.e. TextSpan is not empty), then we will
